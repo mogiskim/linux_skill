@@ -1,0 +1,58 @@
+FROM rockylinux:8
+
+# 필수 패키지 설치
+RUN yum update -y && \
+    yum install -y \
+    tcpdump \
+    iptables \
+    iptables-services \
+    curl \
+    telnet \
+    net-tools \
+    rsyslog \
+    openssh-server \
+    openssh-clients \
+    gcc \
+    openssl \
+    procps-ng \
+    iproute \
+	 vim \
+	 git \
+	 file \
+	 findutils \
+    lsof \
+	 dnf-plugins-core
+
+# powertools 저장소 활성화
+RUN yum config-manager --set-enabled powertools
+
+# glibc-static 패키지 설치
+RUN yum install -y glibc-static
+
+# Vim 플러그인 관리자를 Vundle로 설치
+RUN git clone https://github.com/VundleVim/Vundle.vim.git /root/.vim/bundle/Vundle.vim
+
+# .vimrc 설정 파일 복사
+COPY .vimrc /root/
+
+# vi 명령어를 vim으로 alias 설정
+RUN echo "alias vi='vim'" >> /root/.bashrc
+RUN echo "alias ls='ls --color=auto'" >> /root/.bashrc
+
+# Vim 플러그인 설치
+RUN vim +PluginInstall +qall
+
+# 작업 디렉토리 설정
+WORKDIR /root
+
+# root 계정 비밀번호 설정
+RUN echo "root:root" | chpasswd
+
+# SSH 호스트 키 생성
+RUN ssh-keygen -A
+
+# 엔트리포인트 스크립트 복사
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

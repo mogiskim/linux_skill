@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  server_a:
+    build:
+      context: .
+      dockerfile: Dockerfile_a_b
+    image: my_rockylinux_server_a:8
+    container_name: server_a
+    cap_add:
+      - NET_ADMIN
+    networks:
+      linux_skill_network_a_b:
+        ipv4_address: 172.21.1.11
+
+  server_b:
+    build:
+      context: .
+      dockerfile: Dockerfile_a_b
+    image: my_rockylinux_server_b:8
+    container_name: server_b
+    cap_add:
+      - NET_ADMIN
+    networks:
+      linux_skill_network_a_b:
+        ipv4_address: 172.21.1.22
+      linux_skill_network_b_c:
+        ipv4_address: 172.21.2.22
+
+  server_c:
+    build:
+      context: .
+      dockerfile: Dockerfile_c
+    image: my_rockylinux_server_c:8
+    container_name: server_c
+    cap_add:
+      - NET_ADMIN
+    networks:
+      linux_skill_network_b_c:
+        ipv4_address: 172.21.2.33
+
+networks:
+  linux_skill_network_a_b:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.1.0/24
+  linux_skill_network_b_c:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.2.0/24

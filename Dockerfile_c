@@ -1,0 +1,21 @@
+FROM rockylinux:8
+
+# Python 3 및 pip 설치
+RUN yum update -y && \
+    yum install -y python3 python3-pip
+
+# Flask 설치
+RUN pip3 install flask
+
+# 애플리케이션 디렉토리 생성 및 복사
+RUN mkdir /app
+COPY app.py /app/app.py
+
+# root 계정 비밀번호 설정
+RUN echo "root:root" | chpasswd
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# Flask 앱 실행
+CMD ["python3", "app.py"]
